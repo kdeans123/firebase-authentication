@@ -6,7 +6,7 @@ import {
   signInWithEmailAndPassword, 
   signOut,
   onAuthStateChanged,
-} from './firebase/init';
+} from 'firebase/auth';
 
 import './App.css';
 
