@@ -1,6 +1,6 @@
 import React from 'react';
 import { auth, db } from './firebase/init';
-import { collection, addDoc } from "firebase/firestore";
+import { collection, addDoc, getDocs } from "firebase/firestore";
 import { 
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword, 
@@ -20,6 +20,11 @@ function App() {
       description: "Finish FES",
     };
     addDoc(collection(db, "posts"), post)
+  }
+
+  async function getAllPosts() {
+    const { docs } = await getDocs(collection(db, "posts"));
+    const posts = docs.map(elem => ({...elem.data(), id: elem.id }));
   }
 
 React.useEffect(() => {
@@ -64,7 +69,9 @@ React.useEffect(() => {
       <button onClick={login}>Login</button>
       <button onClick={logout}>Logout</button>
       {loading ? 'loading...' : user.email}
-      <button onClick={createPost}>Create post</button>
+      <button onClick={createPost}>Create Post</button>
+      <button onClick={getAllPosts}>Get All Posts</button>
+      
     </div>
   );
 }
@@ -80,3 +87,7 @@ export default App;
 // const[email, setEmail] and then you will have an input field that sets the email 
 //  when you first load the page, you need to pass an empty array 
 // onAuthStateChanged - so when the page loads user does not hav eto log in again 
+
+//  when you want to have all the post son the page you create a new function getAllPosts and you add import getDocs
+// this changes every element into java script:   const posts = docs.map(elem => elem.data()); 
+// best practice is to add spread operator:  const posts = docs.map(elem => {...elem.data()}); and this allows us to add new propert "Id" 
