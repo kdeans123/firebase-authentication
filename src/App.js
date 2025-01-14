@@ -1,6 +1,6 @@
 import React from 'react';
 import { auth, db } from './firebase/init';
-import { collection, addDoc, getDocs } from "firebase/firestore";
+import { collection, addDoc, getDocs, getDoc, doc } from "firebase/firestore";
 import { 
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword, 
@@ -25,6 +25,11 @@ function App() {
   async function getAllPosts() {
     const { docs } = await getDocs(collection(db, "posts"));
     const posts = docs.map(elem => ({...elem.data(), id: elem.id }));
+  }
+
+  function getPostById() {
+    const hardCodedId = "1KzAVXDpeRIdEfSmxlQx"
+    const postRef = doc(db, "posts", hardCodedId);
   }
 
 React.useEffect(() => {
@@ -52,7 +57,6 @@ React.useEffect(() => {
         setUser(user);
       })
       .catch((error) => {
-        setErrorMessage('The password is invalid or the user does not have a password')
         console.log(error);
       })
   }
@@ -71,7 +75,7 @@ React.useEffect(() => {
       {loading ? 'loading...' : user.email}
       <button onClick={createPost}>Create Post</button>
       <button onClick={getAllPosts}>Get All Posts</button>
-      
+      <button onClick={getPostById}>Get Post By Id</button>
     </div>
   );
 }
