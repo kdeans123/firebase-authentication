@@ -1,6 +1,6 @@
 import React from 'react';
 import { auth, db } from './firebase/init';
-import { collection, addDoc, getDocs, getDoc, doc } from "firebase/firestore";
+import { collection, addDoc, getDocs, getDoc, doc, query, where } from "firebase/firestore";
 import { 
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword, 
@@ -18,6 +18,7 @@ function App() {
     const post = {
       title: "Land $400k job",
       description: "Finish FES",
+      uid: user.uid,
     };
     addDoc(collection(db, "posts"), post)
   }
@@ -30,6 +31,14 @@ function App() {
   function getPostById() {
     const hardCodedId = "1KzAVXDpeRIdEfSmxlQx"
     const postRef = doc(db, "posts", hardCodedId);
+  }
+
+  async function getPostByUid() {
+    const postCollectionRef = await query(
+      collection(db, "posts"),
+      where("uid", "==", user.uid)
+    );
+    const { docs } = await getDocs(postCollectionRef);
   }
 
 React.useEffect(() => {
@@ -76,6 +85,7 @@ React.useEffect(() => {
       <button onClick={createPost}>Create Post</button>
       <button onClick={getAllPosts}>Get All Posts</button>
       <button onClick={getPostById}>Get Post By Id</button>
+      <button onClick={getPostByUid}>Get Post By Uid</button>
     </div>
   );
 }
@@ -95,3 +105,5 @@ export default App;
 //  when you want to have all the post son the page you create a new function getAllPosts and you add import getDocs
 // this changes every element into java script:   const posts = docs.map(elem => elem.data()); 
 // best practice is to add spread operator:  const posts = docs.map(elem => {...elem.data()}); and this allows us to add new propert "Id" 
+// query gives 2 arguments that we can play around with 
+// this is going to work when they are logged in:    where("uid", "==", user.uid) 
