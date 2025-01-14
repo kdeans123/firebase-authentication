@@ -1,6 +1,6 @@
 import React from 'react';
 import { auth, db } from './firebase/init';
-import { collection, addDoc, getDocs, getDoc, doc, query, where, updateDoc } from "firebase/firestore";
+import { collection, addDoc, getDocs, getDoc, doc, query, where, updateDoc, deleteDoc } from "firebase/firestore";
 import { 
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword, 
@@ -14,15 +14,21 @@ function App() {
   const [user, setUser] = React.useState({});
   const [loading, setLoading] = React.useState(true);
 
-  function updatePost() {
+  async function updatePost() {
     const hardCodedId = "1KzAVXDpeRIdEfSmxlQx";
     const postRef = doc(db, "posts", hardCodedId);
+    const post = await getPostById(hardcoded);
     const newPost = {
-      description: "Finish FES",
-      uid: "1",
+      ...post,
       title: "Land $300k job"
     };
     updateDoc(postRef, newPost);
+  }
+
+  function deletePost() {
+    const hardCodedId = "1KzAVXDpeRIdEfSmxlQx";
+    const postRef = doc(db, "posts", hardCodedId);
+    deleteDoc(postRef);
   }
 
   function createPost() {
@@ -39,9 +45,10 @@ function App() {
     const posts = docs.map(elem => ({...elem.data(), id: elem.id }));
   }
 
-  function getPostById() {
-    const hardCodedId = "1KzAVXDpeRIdEfSmxlQx";
-    const postRef = doc(db, "posts", hardCodedId);
+  async function getPostById(id) {
+    const postRef = doc(db, "posts", id);
+    const postSnap = await getDoc(postRef);
+    return postSnap.data();
   }
 
   async function getPostByUid() {
@@ -97,8 +104,8 @@ React.useEffect(() => {
       <button onClick={getAllPosts}>Get All Posts</button>
       <button onClick={getPostById}>Get Post By Id</button>
       <button onClick={getPostByUid}>Get Post By Uid</button>
-      <button onClick={updatePost}>Update Post</button>
-      
+      <button onClick={updatePost}>/Update Post</button>
+      <button onClick={deletePost}>/Delete Post</button>
     </div>
   );
 }
@@ -120,3 +127,4 @@ export default App;
 // best practice is to add spread operator:  const posts = docs.map(elem => {...elem.data()}); and this allows us to add new propert "Id" 
 // query gives 2 arguments that we can play around with 
 // this is going to work when they are logged in:    where("uid", "==", user.uid) 
+// and you do this if you onlky want to change one field, you use spread operator:  ...post,        title: "Land $300k job"
