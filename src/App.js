@@ -1,6 +1,6 @@
 import React from 'react';
 import { auth, db } from './firebase/init';
-import { collection, addDoc, getDocs, getDoc, doc, query, where } from "firebase/firestore";
+import { collection, addDoc, getDocs, getDoc, doc, query, where, updateDoc } from "firebase/firestore";
 import { 
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword, 
@@ -13,6 +13,17 @@ import './App.css';
 function App() {
   const [user, setUser] = React.useState({});
   const [loading, setLoading] = React.useState(true);
+
+  function updatePost() {
+    const hardCodedId = "1KzAVXDpeRIdEfSmxlQx";
+    const postRef = doc(db, "posts", hardCodedId);
+    const newPost = {
+      description: "Finish FES",
+      uid: "1",
+      title: "Land $300k job"
+    };
+    updateDoc(postRef, newPost);
+  }
 
   function createPost() {
     const post = {
@@ -29,7 +40,7 @@ function App() {
   }
 
   function getPostById() {
-    const hardCodedId = "1KzAVXDpeRIdEfSmxlQx"
+    const hardCodedId = "1KzAVXDpeRIdEfSmxlQx";
     const postRef = doc(db, "posts", hardCodedId);
   }
 
@@ -86,6 +97,8 @@ React.useEffect(() => {
       <button onClick={getAllPosts}>Get All Posts</button>
       <button onClick={getPostById}>Get Post By Id</button>
       <button onClick={getPostByUid}>Get Post By Uid</button>
+      <button onClick={updatePost}>Update Post</button>
+      
     </div>
   );
 }
